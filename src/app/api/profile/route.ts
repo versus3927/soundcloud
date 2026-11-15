@@ -2,14 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { likes, playlists, profile } from "@/db/schema";
 import { audius } from "@/lib/audius";
+import { isSoundCloudConfigured } from "@/lib/soundcloud";
 import { count, eq } from "drizzle-orm";
-
-async function getOrCreateProfile() {
-  const rows = await db.select().from(profile).limit(1);
-  if (rows.length > 0) return rows[0];
-  const inserted = await db.insert(profile).values({}).returning();
-  return inserted[0];
-}
+import { getOrCreateProfile } from "@/lib/local-profile";
 
 export async function GET() {
   const p = await getOrCreateProfile();
@@ -19,6 +14,11 @@ export async function GET() {
   ]);
   return NextResponse.json({
     ...p,
+    avatarUrl: p.soundcloudAvatarUrl ?? p.avatarUrl,
+    soundcloudConfigured: isSoundCloudConfigured(),
+    soundcloudConnected: Boolean(
+      p.soundcloudAccessToken && p.soundcloudRefreshToken && p.soundcloudUsername,
+    ),
     stats: { likes: likeRow?.value ?? 0, playlists: playlistRow?.value ?? 0 },
   });
 }
@@ -36,7 +36,6 @@ export async function PATCH(req: NextRequest) {
   }
   if (body.audiusHandle !== undefined) {
     if (!body.audiusHandle) {
-      // unlink
       patch.audiusHandle = null;
       patch.audiusUserId = null;
       patch.audiusName = null;
@@ -68,5 +67,15 @@ export async function PATCH(req: NextRequest) {
     .set(patch)
     .where(eq(profile.id, p.id))
     .returning();
-  return NextResponse.json(updated);
+
+  return NextResponse.json({
+    ...updated,
+    avatarUrl: updated.soundcloudAvatarUrl ?? updated.avatarUrl,
+    soundcloudConfigured: isSoundCloudConfigured(),
+    soundcloudConnected: Boolean(
+      updated.soundcloudAccessToken &&
+        updated.soundcloudRefreshToken &&
+        updated.soundcloudUsername,
+    ),
+  });
 }

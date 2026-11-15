@@ -7,7 +7,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-/** Single local profile (desktop app → one user). Optionally linked to Audius. */
+/** Single local profile (desktop app → one user). Optionally linked to Audius and SoundCloud. */
 export const profile = pgTable("profile", {
   id: serial("id").primaryKey(),
   displayName: text("display_name").notNull().default("versus"),
@@ -16,10 +16,42 @@ export const profile = pgTable("profile", {
   audiusName: text("audius_name"),
   avatarUrl: text("avatar_url"),
   linkedAt: timestamp("linked_at", { withTimezone: true }),
+  soundcloudUserUrn: text("soundcloud_user_urn"),
+  soundcloudUsername: text("soundcloud_username"),
+  soundcloudFullName: text("soundcloud_full_name"),
+  soundcloudPermalink: text("soundcloud_permalink"),
+  soundcloudPermalinkUrl: text("soundcloud_permalink_url"),
+  soundcloudAvatarUrl: text("soundcloud_avatar_url"),
+  soundcloudAccessToken: text("soundcloud_access_token"),
+  soundcloudRefreshToken: text("soundcloud_refresh_token"),
+  soundcloudTokenExpiresAt: timestamp("soundcloud_token_expires_at", {
+    withTimezone: true,
+  }),
+  soundcloudLinkedAt: timestamp("soundcloud_linked_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
 });
+
+export const soundcloudAuthSessions = pgTable(
+  "soundcloud_auth_sessions",
+  {
+    id: serial("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    state: text("state").notNull(),
+    codeVerifier: text("code_verifier").notNull(),
+    status: text("status").notNull().default("pending"),
+    error: text("error"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("soundcloud_auth_sessions_session_idx").on(t.sessionId),
+    uniqueIndex("soundcloud_auth_sessions_state_idx").on(t.state),
+  ],
+);
 
 export const likes = pgTable(
   "likes",

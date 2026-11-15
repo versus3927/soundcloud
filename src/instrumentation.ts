@@ -20,8 +20,44 @@ export async function register() {
       audius_name text,
       avatar_url text,
       linked_at timestamptz,
+      soundcloud_user_urn text,
+      soundcloud_username text,
+      soundcloud_full_name text,
+      soundcloud_permalink text,
+      soundcloud_permalink_url text,
+      soundcloud_avatar_url text,
+      soundcloud_access_token text,
+      soundcloud_refresh_token text,
+      soundcloud_token_expires_at timestamptz,
+      soundcloud_linked_at timestamptz,
       created_at timestamptz NOT NULL DEFAULT now()
     );
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_user_urn text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_username text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_full_name text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_permalink text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_permalink_url text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_avatar_url text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_access_token text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_refresh_token text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_token_expires_at timestamptz;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_linked_at timestamptz;
+
+    CREATE TABLE IF NOT EXISTS soundcloud_auth_sessions (
+      id serial PRIMARY KEY,
+      session_id text NOT NULL,
+      state text NOT NULL,
+      code_verifier text NOT NULL,
+      status text NOT NULL DEFAULT 'pending',
+      error text,
+      completed_at timestamptz,
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS soundcloud_auth_sessions_session_idx
+      ON soundcloud_auth_sessions (session_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS soundcloud_auth_sessions_state_idx
+      ON soundcloud_auth_sessions (state);
+
     CREATE TABLE IF NOT EXISTS likes (
       id serial PRIMARY KEY,
       track_id text NOT NULL,
@@ -35,6 +71,7 @@ export async function register() {
       created_at timestamptz NOT NULL DEFAULT now()
     );
     CREATE UNIQUE INDEX IF NOT EXISTS likes_track_id_idx ON likes (track_id);
+
     CREATE TABLE IF NOT EXISTS playlists (
       id serial PRIMARY KEY,
       name text NOT NULL,
@@ -43,6 +80,7 @@ export async function register() {
       created_at timestamptz NOT NULL DEFAULT now(),
       updated_at timestamptz NOT NULL DEFAULT now()
     );
+
     CREATE TABLE IF NOT EXISTS playlist_tracks (
       id serial PRIMARY KEY,
       playlist_id integer NOT NULL REFERENCES playlists(id) ON DELETE CASCADE,
@@ -58,6 +96,7 @@ export async function register() {
     );
     CREATE UNIQUE INDEX IF NOT EXISTS playlist_tracks_unique
       ON playlist_tracks (playlist_id, track_id);
+
     CREATE TABLE IF NOT EXISTS history (
       id serial PRIMARY KEY,
       track_id text NOT NULL,

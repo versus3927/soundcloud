@@ -13,4 +13,4 @@ desktop/dist/
 .tmp-electron/
 coverage/
 next-env.d.ts
-tsconfig.tsbuildinfo
+*.tsbuildinfo

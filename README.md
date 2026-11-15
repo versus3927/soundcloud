@@ -61,6 +61,21 @@ git push -u origin main
 
 Готово: приложение живо по этому URL, лайки/плейлисты хранятся в твоей БД.
 
+### SoundCloud Sync (официальный OAuth)
+
+Если хочешь кнопку **«Войти через SoundCloud»** + QR для входа с телефона,
+добавь в Railway ещё 3 переменные:
+
+- `SOUNDCLOUD_CLIENT_ID`
+- `SOUNDCLOUD_CLIENT_SECRET`
+- `SOUNDCLOUD_REDIRECT_URI=https://versuscloud.up.railway.app/api/soundcloud/callback`
+
+Важно: эти значения появляются только после регистрации приложения в
+официальном SoundCloud Developer API. По их документации в 2026 году
+поддерживается **OAuth 2.1 + PKCE**, а отдельного device-code / magic-QR-login
+эндпоинта у них нет — поэтому QR в VERSUSCLOUD открывает официальный SoundCloud
+`authorize`-экран на телефоне, после чего сайт на ПК автоматически видит успешный вход.
+
 ## 3. Получить `.exe` (Windows)
 
 ### Вариант А — автоматически через GitHub Actions (рекомендую)
