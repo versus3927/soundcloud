@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   AudioWaveform,
+  Cloud,
   Compass,
   Heart,
   Home,
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/", label: "Главная", icon: Home },
   { href: "/search", label: "Поиск", icon: Search },
+  { href: "/soundcloud", label: "SoundCloud", icon: Cloud },
   { href: "/library", label: "Библиотека", icon: Heart },
   { href: "/profile", label: "Профиль", icon: UserRound },
 ];
