@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+desktop/release/
+desktop/node_modules/
+desktop/dist/
+.tmp-electron/
+coverage/

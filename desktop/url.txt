@@ -1,0 +1,3 @@
+# URL твоего развёрнутого приложения на Railway (без слеша в конце).
+# Пример: https://versuscloud-production.up.railway.app
+https://versuscloud.up.railway.app

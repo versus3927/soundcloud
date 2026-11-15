@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #050a07;
+  --color-panel: #0a100c;
+  --color-surface: #0e1511;
+  --color-elev: #131c16;
+  --color-line: #1a2a20;
+  --color-accent: #00e065;
+  --color-accent-dim: #00b350;
+  --color-accent-soft: #06351c;
+  --color-ink: #e8f5ec;
+  --color-mist: #8fa89a;
+  --color-faint: #5d7268;
+  --font-display: var(--font-unbounded), system-ui, sans-serif;
+  --font-sans: var(--font-grotesk), system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  overflow: hidden;
+}
+
+::selection {
+  background: rgba(0, 224, 101, 0.35);
+  color: #fff;
+}
+
+/* ── slim green scrollbars ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #173423 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #173423;
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 224, 101, 0.45);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── animated equalizer ── */
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-bar {
+  transform-origin: bottom;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+
+/* ── marquee for long titles ── */
+@keyframes marquee {
+  0%,
+  55% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.marquee-inner {
+  animation: marquee 9s linear infinite;
+}
+
+/* ── soft pulse for live dot ── */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(0, 224, 101, 0.5);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 0 6px rgba(0, 224, 101, 0);
+  }
+}
+.live-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+/* ── fade-up entrance ── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+
+/* ── glow behind artwork of playing track ── */
+.glow-accent {
+  box-shadow:
+    0 0 24px rgba(0, 224, 101, 0.25),
+    0 0 80px rgba(0, 224, 101, 0.12);
+}
+
+.text-glow {
+  text-shadow: 0 0 30px rgba(0, 224, 101, 0.45);
+}
+
+/* ── range inputs ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: linear-gradient(
+    to right,
+    var(--color-accent) var(--fill, 0%),
+    #1c2b22 var(--fill, 0%)
+  );
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #eafff2;
+  box-shadow: 0 0 8px rgba(0, 224, 101, 0.8);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.group\/slider:hover input[type="range"]::-webkit-slider-thumb,
+input[type="range"]:active::-webkit-slider-thumb {
+  opacity: 1;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #eafff2;
+}
+
+/* ── ambient background aurora ── */
+.aurora {
+  background:
+    radial-gradient(60% 50% at 15% 0%, rgba(0, 224, 101, 0.07), transparent 60%),
+    radial-gradient(40% 40% at 90% 10%, rgba(0, 179, 80, 0.05), transparent 60%),
+    var(--color-bg);
+}

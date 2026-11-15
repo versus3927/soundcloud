@@ -1,0 +1,44 @@
+name: Build Windows app
+
+# Собирает .exe автоматически:
+#   git tag desktop-v1.0.0 && git push --tags
+# или вручную: GitHub → Actions → Build Windows app → Run workflow
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Electron deps
+        working-directory: desktop
+        run: npm install
+
+      - name: Build NSIS installer + portable exe
+        working-directory: desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: versuscloud-windows
+          path: desktop/release/*.exe
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: desktop/release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
