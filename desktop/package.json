@@ -4,6 +4,10 @@
   "private": true,
   "description": "VERSUSCLOUD — десктопный клиент (Electron)",
   "main": "main.cjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/versus3927/soundcloud.git"
+  },
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
