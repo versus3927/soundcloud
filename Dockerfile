@@ -1,23 +1,28 @@
-# ── VERSUSCLOUD · production image (Railway / any Docker host) ──
+# ── VERSUSCLOUD · Railway production image ──
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-# Build-time dummy value: pg Pool is lazy and never connects during `next build`.
-ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/build"
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY package.json package-lock.json* tsconfig.json next.config.ts postcss.config.mjs drizzle.config.json eslint.config.mjs ./
+COPY src/ ./src/
+COPY public/ ./public/
 RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production \
-    PORT=3000 \
-    HOSTNAME=0.0.0.0
-# Real DATABASE_URL is injected by Railway at runtime.
-COPY --from=builder /app ./
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+USER nextjs
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]

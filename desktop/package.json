@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "VERSUSCLOUD — десктопный клиент (Electron)",
+  "author": "versus3927",
   "main": "main.cjs",
   "repository": {
     "type": "git",
@@ -11,12 +12,13 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder --publish never"
   },
   "build": {
     "appId": "com.versus3927.versuscloud",
     "productName": "VERSUSCLOUD",
     "copyright": "versus3927",
+    "publish": null,
     "directories": {
       "output": "release",
       "buildResources": "."
