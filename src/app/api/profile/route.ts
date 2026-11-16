@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { likes, playlists, profile } from "@/db/schema";
 import { audius } from "@/lib/audius";
-import { isSoundCloudConfigured } from "@/lib/soundcloud";
 import { count, eq } from "drizzle-orm";
 import { getOrCreateProfile } from "@/lib/local-profile";
 
@@ -15,10 +14,6 @@ export async function GET() {
   return NextResponse.json({
     ...p,
     avatarUrl: p.soundcloudAvatarUrl ?? p.avatarUrl,
-    soundcloudConfigured: isSoundCloudConfigured(),
-    soundcloudConnected: Boolean(
-      p.soundcloudAccessToken && p.soundcloudRefreshToken && p.soundcloudUsername,
-    ),
     stats: { likes: likeRow?.value ?? 0, playlists: playlistRow?.value ?? 0 },
   });
 }
@@ -27,13 +22,17 @@ export async function PATCH(req: NextRequest) {
   const body = (await req.json()) as {
     displayName?: string;
     audiusHandle?: string | null;
+    soundcloudProfileUrl?: string | null;
   };
   const p = await getOrCreateProfile();
 
   const patch: Partial<typeof profile.$inferInsert> = {};
+  
   if (typeof body.displayName === "string" && body.displayName.trim()) {
     patch.displayName = body.displayName.trim().slice(0, 60);
   }
+
+  // Audius link
   if (body.audiusHandle !== undefined) {
     if (!body.audiusHandle) {
       patch.audiusHandle = null;
@@ -44,21 +43,33 @@ export async function PATCH(req: NextRequest) {
     } else {
       const handle = body.audiusHandle.replace(/^@/, "").trim();
       const user = await audius.userByHandle(handle);
-      if (!user) {
-        return NextResponse.json(
-          { error: `Профиль @${handle} не найден в Audius` },
-          { status: 404 },
-        );
+      if (user) {
+        patch.audiusHandle = user.handle;
+        patch.audiusUserId = user.id;
+        patch.audiusName = user.name;
+        patch.avatarUrl = user.profile_picture?.["480x480"] ?? user.profile_picture?.["150x150"] ?? null;
+        patch.linkedAt = new Date();
+        if (!body.displayName) patch.displayName = user.name;
       }
-      patch.audiusHandle = user.handle;
-      patch.audiusUserId = user.id;
-      patch.audiusName = user.name;
-      patch.avatarUrl =
-        user.profile_picture?.["480x480"] ??
-        user.profile_picture?.["150x150"] ??
-        null;
-      patch.linkedAt = new Date();
-      if (!body.displayName) patch.displayName = user.name;
+    }
+  }
+
+  // SoundCloud profile link (manual)
+  if (body.soundcloudProfileUrl !== undefined) {
+    if (!body.soundcloudProfileUrl) {
+      patch.soundcloudProfileUrl = null;
+      patch.soundcloudUsername = null;
+      patch.soundcloudAvatarUrl = null;
+      patch.soundcloudLinkedAt = null;
+    } else {
+      const url = body.soundcloudProfileUrl.trim();
+      // Try to extract username from URL
+      const match = url.match(/soundcloud\.com\/([^/?#]+)/);
+      if (match) {
+        patch.soundcloudProfileUrl = url;
+        patch.soundcloudUsername = match[1];
+        patch.soundcloudLinkedAt = new Date();
+      }
     }
   }
 
@@ -71,11 +82,5 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({
     ...updated,
     avatarUrl: updated.soundcloudAvatarUrl ?? updated.avatarUrl,
-    soundcloudConfigured: isSoundCloudConfigured(),
-    soundcloudConnected: Boolean(
-      updated.soundcloudAccessToken &&
-        updated.soundcloudRefreshToken &&
-        updated.soundcloudUsername,
-    ),
   });
 }

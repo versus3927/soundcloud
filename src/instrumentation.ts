@@ -15,35 +15,31 @@ export async function register() {
     CREATE TABLE IF NOT EXISTS profile (
       id serial PRIMARY KEY,
       display_name text NOT NULL DEFAULT 'versus',
+      avatar_url text,
       audius_handle text,
       audius_user_id text,
       audius_name text,
-      avatar_url text,
       linked_at timestamptz,
-      soundcloud_user_urn text,
+      soundcloud_profile_url text,
       soundcloud_username text,
-      soundcloud_full_name text,
-      soundcloud_permalink text,
-      soundcloud_permalink_url text,
       soundcloud_avatar_url text,
-      soundcloud_access_token text,
-      soundcloud_refresh_token text,
-      soundcloud_token_expires_at timestamptz,
       soundcloud_linked_at timestamptz,
       created_at timestamptz NOT NULL DEFAULT now()
     );
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_user_urn text;
+    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_profile_url text;
     ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_username text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_full_name text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_permalink text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_permalink_url text;
     ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_avatar_url text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_access_token text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_refresh_token text;
-    ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_token_expires_at timestamptz;
     ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_linked_at timestamptz;
 
-    CREATE TABLE IF NOT EXISTS soundcloud_auth_sessions (
+    CREATE TABLE IF NOT EXISTS soundcloud_remote_links (
+      id serial PRIMARY KEY,
+      code text NOT NULL,
+      url text,
+      status text NOT NULL DEFAULT 'waiting',
+      created_at timestamptz NOT NULL DEFAULT now()
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS soundcloud_remote_code_idx ON soundcloud_remote_links (code);
+
       id serial PRIMARY KEY,
       session_id text NOT NULL,
       state text NOT NULL,
