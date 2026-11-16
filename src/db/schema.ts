@@ -57,6 +57,7 @@ export const likes = pgTable(
     duration: integer("duration").notNull().default(0),
     genre: text("genre"),
     permalink: text("permalink"),
+    source: text("source").notNull().default("audius"), // "audius" | "soundcloud"
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
