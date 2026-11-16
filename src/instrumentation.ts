@@ -15,10 +15,10 @@ export async function register() {
         audius_user_id text,
         audius_name text,
         linked_at timestamptz,
-        soundcloud_profile_url text,
-        soundcloud_username text,
-        soundcloud_avatar_url text,
-        soundcloud_linked_at timestamptz,
+        wave_profile_url text,
+        wave_username text,
+        wave_avatar_url text,
+        wave_linked_at timestamptz,
         created_at timestamptz NOT NULL DEFAULT now()
       );
       ALTER TABLE profile ADD COLUMN IF NOT EXISTS avatar_url text;
@@ -26,21 +26,21 @@ export async function register() {
       ALTER TABLE profile ADD COLUMN IF NOT EXISTS audius_user_id text;
       ALTER TABLE profile ADD COLUMN IF NOT EXISTS audius_name text;
       ALTER TABLE profile ADD COLUMN IF NOT EXISTS linked_at timestamptz;
-      ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_profile_url text;
-      ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_username text;
-      ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_avatar_url text;
-      ALTER TABLE profile ADD COLUMN IF NOT EXISTS soundcloud_linked_at timestamptz;
+      ALTER TABLE profile ADD COLUMN IF NOT EXISTS wave_profile_url text;
+      ALTER TABLE profile ADD COLUMN IF NOT EXISTS wave_username text;
+      ALTER TABLE profile ADD COLUMN IF NOT EXISTS wave_avatar_url text;
+      ALTER TABLE profile ADD COLUMN IF NOT EXISTS wave_linked_at timestamptz;
 
       -- remote links
-      CREATE TABLE IF NOT EXISTS soundcloud_remote_links (
+      CREATE TABLE IF NOT EXISTS wave_remote_links (
         id serial PRIMARY KEY,
         code text NOT NULL,
         url text,
         status text NOT NULL DEFAULT 'waiting',
         created_at timestamptz NOT NULL DEFAULT now()
       );
-      CREATE UNIQUE INDEX IF NOT EXISTS soundcloud_remote_code_idx
-        ON soundcloud_remote_links (code);
+      CREATE UNIQUE INDEX IF NOT EXISTS wave_remote_code_idx
+        ON wave_remote_links (code);
 
       -- likes
       CREATE TABLE IF NOT EXISTS likes (

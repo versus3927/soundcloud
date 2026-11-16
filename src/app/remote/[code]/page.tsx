@@ -45,8 +45,8 @@ export default function RemotePage() {
       <h1 className="font-display mb-2 text-2xl font-black tracking-tight">
         VERSUS<span className="text-accent">CLOUD</span> Remote
       </h1>
-      <p className="mb-8 max-w-xs text-sm text-mist">
-        Вставь ссылку на SoundCloud (трек или плейлист), и она сразу откроется на твоем ПК.
+        <p className="mb-8 max-w-xs text-sm text-mist">
+        Вставь ссылку на трек или плейлист — она сразу откроется на твоем ПК.
       </p>
 
       {done ? (
@@ -87,7 +87,7 @@ export default function RemotePage() {
 
       <div className="mt-12 flex items-center gap-2 text-[10px] text-faint uppercase tracking-widest">
         <Cloud size={12} />
-        Powered by SoundCloud
+        Remote Link
       </div>
     </div>
   );

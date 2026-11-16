@@ -74,9 +74,10 @@ function PlayerProvider({ children }: { children: ReactNode }) {
         audio.load();
         setCurrentTime(0);
         setDuration(track.duration || 0);
-        setIsPlaying(false);
+        setIsPlaying(true); // Show as "playing" in UI
         if (historySentRef.current !== track.id) {
           historySentRef.current = track.id;
+          // Use neutral path
           fetch("/api/history", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

@@ -74,10 +74,11 @@ export function PlayerBar() {
           )}
           onClick={() => {
             if (isWebTrack && t?.permalink) {
-              window.open(t.permalink, "_blank", "noopener,noreferrer");
+              // Redirect locally to Wave player page from bottom bar click
+              window.location.href = `/wave?play=${encodeURIComponent(t.permalink)}`;
             }
           }}
-          title={isWebTrack ? "Открыть трек" : undefined}
+          title={isWebTrack ? "Открыть Wave" : undefined}
         >
           {t ? (
             <>

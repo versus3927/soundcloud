@@ -21,9 +21,8 @@ const unbounded = Unbounded({
 });
 
 export const metadata: Metadata = {
-  title: "VERSUSCLOUD — музыка без границ",
-  description:
-    "Саундклауд-клиент в зелёных тонах: поиск, лайки, плейлисты, библиотека. Работает без VPN на сети Audius.",
+  title: "VERSUSCLOUD",
+  description: "Wave music player",
 };
 
 export const viewport: Viewport = {
