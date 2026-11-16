@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  Audius API client — open SoundCloud alternative.
+//  Audius API client — open Wave alternative.
 //  Works without VPN / API keys. Docs: https://docs.audius.org
 // ─────────────────────────────────────────────────────────────
 

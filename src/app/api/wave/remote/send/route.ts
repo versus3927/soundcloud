@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { soundcloudRemoteLinks } from "@/db/schema";
+import { waveRemoteLinks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 /** Phone sends URL */
@@ -10,16 +10,16 @@ export async function POST(req: NextRequest) {
 
   const [link] = await db
     .select()
-    .from(soundcloudRemoteLinks)
-    .where(eq(soundcloudRemoteLinks.code, code.toUpperCase()))
+    .from(waveRemoteLinks)
+    .where(eq(waveRemoteLinks.code, code.toUpperCase()))
     .limit(1);
 
   if (!link) return NextResponse.json({ error: "Invalid code" }, { status: 404 });
 
   await db
-    .update(soundcloudRemoteLinks)
+    .update(waveRemoteLinks)
     .set({ url, status: "received" })
-    .where(eq(soundcloudRemoteLinks.id, link.id));
+    .where(eq(waveRemoteLinks.id, link.id));
 
   return NextResponse.json({ ok: true });
 }

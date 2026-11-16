@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Public SoundCloud API Client ID (commonly used in open-source projects)
+// Public Wave API Client ID (commonly used in open-source projects)
 const PUBLIC_CLIENT_ID = "v8p9U7mI7rR6e8S3C5Xv0T8e9G9W6r5a"; 
 
 export async function GET(req: NextRequest) {
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     if (!res.ok) {
         // If the public client_id is dead, we'll need to fetch a new one or return empty
-        return NextResponse.json({ error: "SoundCloud API temporarily unavailable", results: [] }, { status: 200 });
+        return NextResponse.json({ error: "Wave API temporarily unavailable", results: [] }, { status: 200 });
     }
 
     const data = await res.json();
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         id: t.id,
         title: t.title,
         url: t.permalink_url,
-        author: t.user?.username || "SoundCloud",
+        author: t.user?.username || "Wave",
         artwork: t.artwork_url || t.user?.avatar_url || null,
         duration: Math.floor(t.duration / 1000)
     }));

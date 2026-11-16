@@ -7,7 +7,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
-/** Single local profile (desktop app → one user). Optionally linked to Audius and SoundCloud. */
+/** Single local profile (desktop app → one user). Optionally linked to Audius and Wave. */
 export const profile = pgTable("profile", {
   id: serial("id").primaryKey(),
   displayName: text("display_name").notNull().default("versus"),
@@ -19,11 +19,11 @@ export const profile = pgTable("profile", {
   audiusName: text("audius_name"),
   linkedAt: timestamp("linked_at", { withTimezone: true }),
 
-  // SoundCloud link (manual via URL)
-  soundcloudProfileUrl: text("soundcloud_profile_url"),
-  soundcloudUsername: text("soundcloud_username"),
-  soundcloudAvatarUrl: text("soundcloud_avatar_url"),
-  soundcloudLinkedAt: timestamp("soundcloud_linked_at", { withTimezone: true }),
+  // Wave link (manual via URL)
+  waveProfileUrl: text("wave_profile_url"),
+  waveUsername: text("wave_username"),
+  waveAvatarUrl: text("wave_avatar_url"),
+  waveLinkedAt: timestamp("wave_linked_at", { withTimezone: true }),
 
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -31,8 +31,8 @@ export const profile = pgTable("profile", {
 });
 
 /** Remote transfer of links (Phone -> PC) */
-export const soundcloudRemoteLinks = pgTable(
-  "soundcloud_remote_links",
+export const waveRemoteLinks = pgTable(
+  "wave_remote_links",
   {
     id: serial("id").primaryKey(),
     code: text("code").notNull(),
@@ -42,7 +42,7 @@ export const soundcloudRemoteLinks = pgTable(
       .notNull()
       .defaultNow(),
   },
-  (t) => [uniqueIndex("soundcloud_remote_code_idx").on(t.code)],
+  (t) => [uniqueIndex("wave_remote_code_idx").on(t.code)],
 );
 
 export const likes = pgTable(
@@ -57,7 +57,7 @@ export const likes = pgTable(
     duration: integer("duration").notNull().default(0),
     genre: text("genre"),
     permalink: text("permalink"),
-    source: text("source").notNull().default("audius"), // "audius" | "soundcloud"
+    source: text("source").notNull().default("audius"), // "audius" | "wave"
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

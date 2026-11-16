@@ -18,7 +18,7 @@ export default function RemotePage() {
     setError("");
 
     try {
-      const res = await fetch("/api/soundcloud/remote/send", {
+      const res = await fetch("/api/wave/remote/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, url: url.trim() }),
@@ -69,7 +69,7 @@ export default function RemotePage() {
               autoFocus
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://soundcloud.com/..."
+              placeholder="Вставь ссылку на трек..."
               className="h-14 w-full rounded-2xl border border-line bg-panel px-4 text-sm text-ink outline-none focus:border-accent"
             />
           </div>

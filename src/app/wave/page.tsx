@@ -33,12 +33,7 @@ interface SearchResult {
   duration: number;
 }
 
-const POPULAR_LINKS = [
-  { label: "Carti", url: "https://soundcloud.com/playboicarti" },
-  { label: "Uzi", url: "https://soundcloud.com/liluzivert" },
-  { label: "Travis", url: "https://soundcloud.com/travisscott" },
-  { label: "deadmau5", url: "https://soundcloud.com/deadmau5" },
-];
+const POPULAR_LINKS: { label: string; url: string }[] = [];
 
 function WavePageContent() {
   const [input, setInput] = useState("");
@@ -73,7 +68,7 @@ function WavePageContent() {
       try {
         // Construct iframe directly on client to avoid server-side timeouts
         const encodedUrl = encodeURIComponent(url);
-        const iframeSrc = `https://w.soundcloud.com/player/?url=${encodedUrl}&color=%2300e065&auto_play=true&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=false`;
+        const iframeSrc = `https://w.wave.com/player/?url=${encodedUrl}&color=%2300e065&auto_play=true&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=true&visual=false`;
         
         const html = `<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="${iframeSrc}"></iframe>`;
         

@@ -29,7 +29,7 @@ async function resolveShortUrl(url: string): Promise<string> {
   }
 }
 
-/** Fetch a public client_id from SoundCloud's web app bundle. */
+/** Fetch a public client_id from Wave's web app bundle. */
 let cachedClientId: string | null = null;
 let clientIdFetchedAt = 0;
 
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     const clientId = await getPublicClientId();
     
     if (!clientId) {
-      return NextResponse.json({ error: "Не удалось подключиться к SoundCloud" }, { status: 503 });
+      return NextResponse.json({ error: "Не удалось подключиться к Wave" }, { status: 503 });
     }
 
     const tracks = await fetchScLikes(resolvedUrl, clientId);
@@ -150,11 +150,11 @@ export async function POST(req: NextRequest) {
           .values({
             trackId: `sc_${t.id}`,
             title: t.title,
-            artist: t.user?.username || "SoundCloud Artist",
+            artist: t.user?.username || "Wave Artist",
             artistHandle: t.user?.permalink || "",
             artwork: t.artwork_url,
             duration: t.duration,
-            source: "soundcloud",
+            source: "wave",
             permalink: t.permalink_url,
           })
           .onConflictDoNothing();

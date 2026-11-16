@@ -32,14 +32,7 @@ interface SearchResult {
   duration: number;
 }
 
-const POPULAR_LINKS = [
-  { label: "Playboi Carti", url: "https://soundcloud.com/playboicarti" },
-  { label: "Lil Uzi Vert", url: "https://soundcloud.com/liluzivert" },
-  { label: "Travis Scott", url: "https://soundcloud.com/travisscott" },
-  { label: "Juice WRLD", url: "https://soundcloud.com/uiceheidd" },
-  { label: "deadmau5", url: "https://soundcloud.com/deadmau5" },
-  { label: "Skrillex", url: "https://soundcloud.com/skaborofficial" },
-];
+const POPULAR_LINKS: { label: string; url: string }[] = [];
 
 function WavePageContent() {
   const [input, setInput] = useState("");
@@ -72,7 +65,7 @@ function WavePageContent() {
       setError("");
       setSearchResults([]);
       try {
-        const res = await fetch(`/api/soundcloud/oembed?url=${encodeURIComponent(url)}`);
+        const res = await fetch(`/api/wave/oembed?url=${encodeURIComponent(url)}`);
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Ошибка загрузки");
 
@@ -119,7 +112,7 @@ function WavePageContent() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`/api/soundcloud/search?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`/api/wave/search?q=${encodeURIComponent(q)}`);
       const json = await res.json();
       setSearchResults(json.results || []);
       if (json.results?.length === 0) setError("Ничего не найдено");
@@ -135,7 +128,7 @@ function WavePageContent() {
       setShowQrModal(true);
       return;
     }
-    const res = await fetch("/api/soundcloud/remote", { method: "POST" });
+    const res = await fetch("/api/wave/remote", { method: "POST" });
     const { code } = await res.json();
     setRemoteCode(code);
     const remoteUrl = `${window.location.origin}/remote/${code}`;
@@ -152,7 +145,7 @@ function WavePageContent() {
     if (!remoteCode) return;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/soundcloud/remote?code=${remoteCode}`);
+        const res = await fetch(`/api/wave/remote?code=${remoteCode}`);
         const json = await res.json();
         if (json.url) {
           loadEmbed(json.url);

@@ -54,10 +54,10 @@ function normalizeRow(row: Record<string, unknown>) {
     audiusUserId: (row.audius_user_id as string | null) ?? null,
     audiusName: (row.audius_name as string | null) ?? null,
     linkedAt: (row.linked_at as Date | null) ?? null,
-    soundcloudProfileUrl: (row.soundcloud_profile_url as string | null) ?? null,
-    soundcloudUsername: (row.soundcloud_username as string | null) ?? null,
-    soundcloudAvatarUrl: (row.soundcloud_avatar_url as string | null) ?? null,
-    soundcloudLinkedAt: (row.soundcloud_linked_at as Date | null) ?? null,
+    waveProfileUrl: (row.wave_profile_url as string | null) ?? null,
+    waveUsername: (row.wave_username as string | null) ?? null,
+    waveAvatarUrl: (row.wave_avatar_url as string | null) ?? null,
+    waveLinkedAt: (row.wave_linked_at as Date | null) ?? null,
     createdAt: row.created_at as Date,
   };
 }

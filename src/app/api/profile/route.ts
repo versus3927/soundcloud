@@ -28,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json({
       ...p,
-      avatarUrl: p.soundcloudAvatarUrl ?? p.avatarUrl,
+      avatarUrl: p.waveAvatarUrl ?? p.avatarUrl,
       stats: { likes: likesCount, playlists: playlistsCount },
     });
   } catch (e) {
@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest) {
     const body = (await req.json()) as {
       displayName?: string;
       audiusHandle?: string | null;
-      soundcloudProfileUrl?: string | null;
+      waveProfileUrl?: string | null;
     };
     const p = await getOrCreateProfile();
     const patch: Record<string, unknown> = {};
@@ -80,19 +80,19 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    if (body.soundcloudProfileUrl !== undefined) {
-      if (!body.soundcloudProfileUrl) {
-        patch.soundcloudProfileUrl = null;
-        patch.soundcloudUsername = null;
-        patch.soundcloudAvatarUrl = null;
-        patch.soundcloudLinkedAt = null;
+    if (body.waveProfileUrl !== undefined) {
+      if (!body.waveProfileUrl) {
+        patch.waveProfileUrl = null;
+        patch.waveUsername = null;
+        patch.waveAvatarUrl = null;
+        patch.waveLinkedAt = null;
       } else {
-        const url = body.soundcloudProfileUrl.trim();
-        const match = url.match(/soundcloud\.com\/([^/?#]+)/);
+        const url = body.waveProfileUrl.trim();
+        const match = url.match(/wave\.com\/([^/?#]+)/);
         if (match) {
-          patch.soundcloudProfileUrl = url;
-          patch.soundcloudUsername = match[1];
-          patch.soundcloudLinkedAt = new Date();
+          patch.waveProfileUrl = url;
+          patch.waveUsername = match[1];
+          patch.waveLinkedAt = new Date();
         }
       }
     }
@@ -100,7 +100,7 @@ export async function PATCH(req: NextRequest) {
     const updated = await patchProfile(p.id, patch);
     return NextResponse.json({
       ...updated,
-      avatarUrl: updated.soundcloudAvatarUrl ?? updated.avatarUrl,
+      avatarUrl: updated.waveAvatarUrl ?? updated.avatarUrl,
     });
   } catch (e) {
     console.error("[profile PATCH]", e);

@@ -25,10 +25,10 @@ interface Profile {
   audiusHandle: string | null;
   audiusName: string | null;
   linkedAt: string | null;
-  soundcloudProfileUrl: string | null;
-  soundcloudUsername: string | null;
-  soundcloudAvatarUrl: string | null;
-  soundcloudLinkedAt: string | null;
+  waveProfileUrl: string | null;
+  waveUsername: string | null;
+  waveAvatarUrl: string | null;
+  waveLinkedAt: string | null;
   stats: { likes: number; playlists: number };
 }
 
@@ -46,7 +46,7 @@ export default function ProfilePage() {
   const [linking, setLinking] = useState(false);
   const [linkError, setLinkError] = useState("");
 
-  // SoundCloud profile link
+  // Wave profile link
   const [scUrl, setScUrl] = useState("");
   const [scLinking, setScLinking] = useState(false);
 
@@ -67,7 +67,7 @@ export default function ProfilePage() {
       .then((p: Profile) => {
         setProfile(p);
         setName(p.displayName);
-        setImportUrl(p.soundcloudProfileUrl ?? "");
+        setImportUrl(p.waveProfileUrl ?? "");
       })
       .catch((e: Error) => setFetchError(e.message));
   };
@@ -116,24 +116,24 @@ export default function ProfilePage() {
     load();
   };
 
-  const linkSoundCloud = async () => {
+  const linkWave = async () => {
     if (!scUrl.trim()) return;
     setScLinking(true);
     await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ soundcloudProfileUrl: scUrl.trim() }),
+      body: JSON.stringify({ waveProfileUrl: scUrl.trim() }),
     });
     setScLinking(false);
     setImportUrl(scUrl.trim());
     load();
   };
 
-  const unlinkSoundCloud = async () => {
+  const unlinkWave = async () => {
     await fetch("/api/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ soundcloudProfileUrl: null }),
+      body: JSON.stringify({ waveProfileUrl: null }),
     });
     setScUrl("");
     setImportUrl("");
@@ -141,13 +141,13 @@ export default function ProfilePage() {
   };
 
   const importLikes = async () => {
-    const url = importUrl.trim() || profile?.soundcloudProfileUrl?.trim();
+    const url = importUrl.trim() || profile?.waveProfileUrl?.trim();
     if (!url) return;
     setImporting(true);
     setImportError("");
     setImportResult(null);
     try {
-      const res = await fetch("/api/soundcloud/import-likes", {
+      const res = await fetch("/api/wave/import-likes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ profileUrl: url }),
@@ -194,7 +194,7 @@ export default function ProfilePage() {
     );
   }
 
-  const effectiveAvatar = profile.soundcloudAvatarUrl ?? profile.avatarUrl;
+  const effectiveAvatar = profile.waveAvatarUrl ?? profile.avatarUrl;
 
   return (
     <>
@@ -249,11 +249,11 @@ export default function ProfilePage() {
                 <span>
                   <b className="text-ink">{profile.stats.playlists}</b> плейлистов
                 </span>
-                {profile.soundcloudUsername && (
+                {profile.waveUsername && (
                   <>
                     <span className="text-line">·</span>
                     <span className="flex items-center gap-1 text-[#ff5500]">
-                      <Cloud size={12} /> @{profile.soundcloudUsername}
+                      <Cloud size={12} /> @{profile.waveUsername}
                     </span>
                   </>
                 )}
@@ -273,18 +273,18 @@ export default function ProfilePage() {
             <b className="text-ink">«Перенести лайки»</b> — избранные треки попадут в библиотеку VERSUSCLOUD.
           </p>
 
-          {profile.soundcloudProfileUrl ? (
+          {profile.waveProfileUrl ? (
             <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-[#ff5500]/25 bg-[#ff5500]/8 p-5">
               <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full border border-[#ff5500]/30 bg-surface">
                 <Cloud size={20} className="text-[#ff5500]" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 text-sm font-bold text-ink">
-                  @{profile.soundcloudUsername}
+                  @{profile.waveUsername}
                   <BadgeCheck size={14} className="text-[#ff5500]" />
                 </div>
                 <a
-                  href={profile.soundcloudProfileUrl}
+                  href={profile.waveProfileUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="text-xs text-[#ff5500] hover:underline"
@@ -293,7 +293,7 @@ export default function ProfilePage() {
                 </a>
               </div>
               <button
-                onClick={unlinkSoundCloud}
+                onClick={unlinkWave}
                 className="flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-xs text-mist hover:border-red-400/50 hover:text-red-300"
               >
                 <Unlink size={12} /> Отвязать
@@ -304,12 +304,12 @@ export default function ProfilePage() {
               <input
                 value={scUrl}
                 onChange={(e) => setScUrl(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && linkSoundCloud()}
+                onKeyDown={(e) => e.key === "Enter" && linkWave()}
                 placeholder="https://site.com/твой-ник"
                 className="h-11 flex-1 rounded-full border border-line bg-surface px-4 text-sm text-ink outline-none focus:border-[#ff5500]/50"
               />
               <button
-                onClick={linkSoundCloud}
+                onClick={linkWave}
                 disabled={scLinking || !scUrl.trim()}
                 className="rounded-full bg-[#ff5500] px-5 text-sm font-bold text-white disabled:opacity-40"
               >
