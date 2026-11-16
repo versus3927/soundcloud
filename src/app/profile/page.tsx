@@ -262,16 +262,15 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* SoundCloud block */}
+        {/* External profile block */}
         <section className="mb-8 rounded-3xl border border-line bg-panel/70 p-8">
           <div className="mb-1 flex items-center gap-2">
             <Cloud size={17} className="text-[#ff5500]" />
-            <h2 className="font-display text-lg font-bold tracking-tight">SoundCloud профиль</h2>
+            <h2 className="font-display text-lg font-bold tracking-tight">Внешний профиль</h2>
           </div>
           <p className="mb-5 text-[13px] text-mist">
-            Введи ссылку на свой SoundCloud-профиль. Это даёт кнопку{" "}
-            <b className="text-ink">«Перенести лайки»</b> — все публичные лайки с твоего профиля
-            SoundCloud попадут в библиотеку VERSUSCLOUD и можно будет их здесь слушать.
+            Введи ссылку на публичный профиль. Это даёт кнопку{" "}
+            <b className="text-ink">«Перенести лайки»</b> — избранные треки попадут в библиотеку VERSUSCLOUD.
           </p>
 
           {profile.soundcloudProfileUrl ? (
@@ -290,7 +289,7 @@ export default function ProfilePage() {
                   rel="noreferrer"
                   className="text-xs text-[#ff5500] hover:underline"
                 >
-                  Открыть на SoundCloud
+                  Открыть источник
                 </a>
               </div>
               <button
@@ -306,7 +305,7 @@ export default function ProfilePage() {
                 value={scUrl}
                 onChange={(e) => setScUrl(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && linkSoundCloud()}
-                placeholder="https://soundcloud.com/твой-ник"
+                placeholder="https://site.com/твой-ник"
                 className="h-11 flex-1 rounded-full border border-line bg-surface px-4 text-sm text-ink outline-none focus:border-[#ff5500]/50"
               />
               <button
@@ -323,17 +322,17 @@ export default function ProfilePage() {
           <div className="rounded-2xl border border-line bg-surface/60 p-5">
             <div className="mb-3 flex items-center gap-2 text-sm font-bold text-ink">
               <Heart size={15} className="text-[#ff5500]" />
-              Перенести лайки из SoundCloud
+              Перенести лайки
             </div>
             <p className="mb-4 text-xs text-mist">
-              Вставь ссылку на любой <b className="text-ink">публичный</b> SoundCloud-профиль.
+              Вставь ссылку на любой <b className="text-ink">публичный</b> профиль.
               Все лайки появятся в <b className="text-ink">Библиотеке → Лайки</b>.
             </p>
             <div className="flex gap-2">
               <input
                 value={importUrl}
                 onChange={(e) => setImportUrl(e.target.value)}
-                placeholder="https://soundcloud.com/username"
+                placeholder="https://site.com/username"
                 className="h-11 flex-1 rounded-full border border-line bg-surface px-4 text-sm text-ink outline-none focus:border-[#ff5500]/50"
               />
               <button
@@ -353,7 +352,7 @@ export default function ProfilePage() {
             {importing && (
               <div className="mt-4 flex items-center gap-2 text-sm text-mist">
                 <LoaderCircle size={15} className="animate-spin text-[#ff5500]" />
-                Загружаем лайки с SoundCloud…
+                Загружаем лайки…
               </div>
             )}
 

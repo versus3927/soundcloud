@@ -45,27 +45,40 @@ export function PlayerBar() {
   const t = p.current;
   const progress = p.duration > 0 ? (p.currentTime / p.duration) * 100 : 0;
   const liked = t ? ids.has(t.id) : false;
+  const isWebTrack = Boolean(t?.id.startsWith("sc_") && t?.permalink);
 
   return (
     <div className="relative z-40 border-t border-line bg-panel/95 backdrop-blur-xl">
       {/* progress on the top edge */}
       <div className="group/slider absolute -top-[2px] right-0 left-0">
-        <input
-          type="range"
-          min={0}
-          max={p.duration || 0}
-          step={0.1}
-          value={p.currentTime}
-          onChange={(e) => p.seek(Number(e.target.value))}
-          className="block h-[6px] w-full hover:h-[8px] transition-all"
-          style={{ ["--fill" as string]: `${progress}%` }}
-          aria-label="Позиция"
-        />
+          <input
+            type="range"
+            min={0}
+            max={p.duration || 0}
+            step={0.1}
+            value={p.currentTime}
+            onChange={(e) => p.seek(Number(e.target.value))}
+            disabled={isWebTrack}
+            className="block h-[6px] w-full hover:h-[8px] transition-all disabled:opacity-40"
+            style={{ ["--fill" as string]: `${progress}%` }}
+            aria-label="Позиция"
+          />
       </div>
 
       <div className="grid h-[84px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4">
         {/* left: track info */}
-        <div className="flex min-w-0 items-center gap-3">
+        <div
+          className={cn(
+            "flex min-w-0 items-center gap-3",
+            isWebTrack && "cursor-pointer rounded-xl px-2 py-1 transition-colors hover:bg-surface",
+          )}
+          onClick={() => {
+            if (isWebTrack && t?.permalink) {
+              window.location.href = `/wave?play=${encodeURIComponent(t.permalink)}`;
+            }
+          }}
+          title={isWebTrack ? "Открыть Wave" : undefined}
+        >
           {t ? (
             <>
               <div className={cn("relative shrink-0", p.isPlaying && "glow-accent rounded-lg")}>
@@ -86,15 +99,24 @@ export function PlayerBar() {
                 <div className="truncate text-sm font-semibold text-ink">
                   {t.title}
                 </div>
-                <Link
-                  href={t.artistHandle ? `/artist/${t.artistHandle}` : "#"}
-                  className="block truncate text-xs text-mist transition-colors hover:text-accent"
-                >
-                  {t.artist}
-                </Link>
+                {isWebTrack ? (
+                  <div className="block truncate text-xs text-mist">
+                    {t.artist} · открыть Wave
+                  </div>
+                ) : (
+                  <Link
+                    href={t.artistHandle ? `/artist/${t.artistHandle}` : "#"}
+                    className="block truncate text-xs text-mist transition-colors hover:text-accent"
+                  >
+                    {t.artist}
+                  </Link>
+                )}
               </div>
               <button
-                onClick={() => toggleLike(t)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLike(t);
+                }}
                 className={cn(
                   "ml-1 shrink-0 rounded-full p-2 transition-all hover:scale-110",
                   liked ? "text-accent" : "text-faint hover:text-accent",
@@ -136,7 +158,7 @@ export function PlayerBar() {
             </button>
             <button
               onClick={p.toggle}
-              disabled={!t}
+              disabled={!t || isWebTrack}
               className="grid h-11 w-11 scale-100 place-items-center rounded-full bg-accent text-black shadow-[0_0_20px_rgba(0,224,101,0.45)] transition-all hover:scale-105 disabled:opacity-30 disabled:shadow-none"
               aria-label={p.isPlaying ? "Пауза" : "Играть"}
             >

@@ -48,7 +48,7 @@ const POPULAR_LINKS = [
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-function SoundCloudPageContent() {
+function WavePageContent() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -179,7 +179,7 @@ function SoundCloudPageContent() {
               <Cloud size={22} />
             </div>
             <div>
-              <h1 className="font-display text-2xl font-black tracking-tight">SoundCloud</h1>
+              <h1 className="font-display text-2xl font-black tracking-tight">Wave</h1>
               <p className="text-xs text-mist">Поиск по названию или ссылке. Работает без VPN.</p>
             </div>
           </div>
@@ -305,7 +305,7 @@ function SoundCloudPageContent() {
       {showQrModal && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-3xl border border-line bg-panel p-8 text-center">
-            <h3 className="font-display mb-2 text-xl font-black">Пульт SoundCloud</h3>
+            <h3 className="font-display mb-2 text-xl font-black">Remote Link</h3>
             <p className="mb-6 text-xs text-mist">Отсканируй QR телефоном и вставь ссылку — музыка сразу заиграет на ПК.</p>
             <div className="mx-auto mb-6 grid h-64 w-64 place-items-center rounded-2xl bg-white p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -324,10 +324,10 @@ function SoundCloudPageContent() {
   );
 }
 
-export default function SoundCloudPage() {
+export default function WavePage() {
   return (
     <Suspense fallback={null}>
-      <SoundCloudPageContent />
+      <WavePageContent />
     </Suspense>
   );
 }

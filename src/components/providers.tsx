@@ -124,6 +124,9 @@ function PlayerProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !current) return;
+    if (current.id.startsWith("sc_") && current.permalink) {
+      return;
+    }
     if (audio.paused) {
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
