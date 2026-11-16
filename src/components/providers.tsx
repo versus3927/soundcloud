@@ -66,16 +66,22 @@ function PlayerProvider({ children }: { children: ReactNode }) {
     (track: Track, autoplay = true) => {
       const audio = audioRef.current;
       if (!audio) return;
-      
-      // Handle SoundCloud tracks differently (they can't be streamed via Audius)
+
+      // External tracks: select in bottom bar, but do not auto-open Wave here.
       if (track.id.startsWith("sc_")) {
-        // Pause current audio
         audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+        setCurrentTime(0);
+        setDuration(track.duration || 0);
         setIsPlaying(false);
-        // Instead of streaming, we redirect to the SoundCloud embed page
-        // We use window.location to force navigation since we're outside a Next.js component router context
-        if (track.permalink) {
-          window.location.href = `/soundcloud?play=${encodeURIComponent(track.permalink)}`;
+        if (historySentRef.current !== track.id) {
+          historySentRef.current = track.id;
+          fetch("/api/history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ track }),
+          }).catch(() => {});
         }
         return;
       }

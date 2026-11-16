@@ -1,1 +1,1 @@
-export { default } from "../soundcloud/page";
+export { default } from "@/components/wave-page";
