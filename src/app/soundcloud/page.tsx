@@ -45,13 +45,18 @@ const POPULAR_LINKS = [
   { label: "Skrillex", url: "https://soundcloud.com/skaborofficial" },
 ];
 
-export default function SoundCloudPage() {
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function SoundCloudPageContent() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [error, setError] = useState("");
   const [embeds, setEmbeds] = useState<EmbedItem[]>([]);
   const [activeEmbed, setActiveEmbed] = useState<EmbedItem | null>(null);
+  
+  const searchParams = useSearchParams();
 
   // QR Transfer State
   const [remoteCode, setRemoteCode] = useState<string | null>(null);
@@ -100,6 +105,15 @@ export default function SoundCloudPage() {
     },
     [embeds, saveEmbeds],
   );
+
+  // Auto-load track if ?play= URL param exists
+  useEffect(() => {
+    const playUrl = searchParams.get("play");
+    if (playUrl) {
+      loadEmbed(playUrl);
+      // Optional: remove the param so it doesn't reload on refresh, but let's keep it simple for now
+    }
+  }, [searchParams, loadEmbed]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,5 +321,13 @@ export default function SoundCloudPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SoundCloudPage() {
+  return (
+    <Suspense fallback={null}>
+      <SoundCloudPageContent />
+    </Suspense>
   );
 }

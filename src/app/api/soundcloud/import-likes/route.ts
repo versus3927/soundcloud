@@ -141,7 +141,9 @@ export async function POST(req: NextRequest) {
     }
 
     let imported = 0;
-    for (const t of tracks) {
+    // Reverse so the newest like (first in SC response) is inserted last and gets the newest created_at
+    const reversedTracks = [...tracks].reverse();
+    for (const t of reversedTracks) {
       try {
         await db
           .insert(likes)
