@@ -74,10 +74,10 @@ export function PlayerBar() {
           )}
           onClick={() => {
             if (isWebTrack && t?.permalink) {
-              window.location.href = `/wave?play=${encodeURIComponent(t.permalink)}`;
+              window.open(t.permalink, "_blank", "noopener,noreferrer");
             }
           }}
-          title={isWebTrack ? "Открыть Wave" : undefined}
+          title={isWebTrack ? "Открыть трек" : undefined}
         >
           {t ? (
             <>
@@ -101,7 +101,7 @@ export function PlayerBar() {
                 </div>
                 {isWebTrack ? (
                   <div className="block truncate text-xs text-mist">
-                    {t.artist} · открыть Wave
+                    {t.artist} · нажми, чтобы открыть
                   </div>
                 ) : (
                   <Link
