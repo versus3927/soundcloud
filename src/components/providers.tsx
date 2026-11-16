@@ -67,23 +67,9 @@ function PlayerProvider({ children }: { children: ReactNode }) {
       const audio = audioRef.current;
       if (!audio) return;
 
-      // External tracks: select in bottom bar, but do not auto-open Wave here.
-      if (track.id.startsWith("sc_")) {
-        audio.pause();
-        audio.removeAttribute("src");
-        audio.load();
-        setCurrentTime(0);
-        setDuration(track.duration || 0);
-        setIsPlaying(true); // Show as "playing" in UI
-        if (historySentRef.current !== track.id) {
-          historySentRef.current = track.id;
-          // Use neutral path
-          fetch("/api/history", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ track }),
-          }).catch(() => {});
-        }
+      // External tracks: open directly in new tab
+      if (track.id.startsWith("sc_") && track.permalink) {
+        window.open(track.permalink, "_blank", "noopener");
         return;
       }
 
