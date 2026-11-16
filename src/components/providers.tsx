@@ -10,6 +10,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import dynamic from "next/dynamic";
+const ReactPlayer = dynamic(() => import("react-player") as any, { ssr: false }) as any;
 import type { Track } from "@/lib/audius";
 
 // ────────────────────────────── Player ──────────────────────────────
@@ -49,6 +51,7 @@ export function usePlayer() {
 
 function PlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playerRef = useRef<any>(null);
   const [queue, setQueue] = useState<Track[]>([]);
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,24 +64,28 @@ function PlayerProvider({ children }: { children: ReactNode }) {
   const historySentRef = useRef<string | null>(null);
 
   const current = queue[index] ?? null;
+  const isExternal = Boolean(current?.id.startsWith("sc_"));
 
   const loadTrack = useCallback(
     (track: Track, autoplay = true) => {
       const audio = audioRef.current;
       if (!audio) return;
 
-      // External tracks: open directly in new tab
-      if (track.id.startsWith("sc_") && track.permalink) {
-        window.open(track.permalink, "_blank", "noopener");
-        return;
-      }
-
-      audio.src = `/api/stream/${track.id}`;
       setCurrentTime(0);
       setDuration(track.duration || 0);
-      if (autoplay) {
-        audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      
+      if (track.id.startsWith("sc_") && track.permalink) {
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+        if (autoplay) setIsPlaying(true);
+      } else {
+        audio.src = `/api/stream/${track.id}`;
+        if (autoplay) {
+          audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+        }
       }
+
       if (historySentRef.current !== track.id) {
         historySentRef.current = track.id;
         fetch("/api/history", {
@@ -117,9 +124,12 @@ function PlayerProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !current) return;
-    if (current.id.startsWith("sc_") && current.permalink) {
+    
+    if (current.id.startsWith("sc_")) {
+      setIsPlaying((p) => !p);
       return;
     }
+
     if (audio.paused) {
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     } else {
@@ -162,9 +172,16 @@ function PlayerProvider({ children }: { children: ReactNode }) {
   const seek = useCallback((t: number) => {
     const audio = audioRef.current;
     if (!audio) return;
+    
+    if (current?.id.startsWith("sc_")) {
+      playerRef.current?.seekTo(t, "seconds");
+      setCurrentTime(t);
+      return;
+    }
+
     audio.currentTime = t;
     setCurrentTime(t);
-  }, []);
+  }, [current]);
 
   const setVolume = useCallback((v: number) => {
     const audio = audioRef.current;
@@ -254,7 +271,35 @@ function PlayerProvider({ children }: { children: ReactNode }) {
     [queue, index, current, isPlaying, currentTime, duration, volume, muted, shuffle, repeat, playTracks, playNext, toggle, next, prev, seek, setVolume, toggleMute],
   );
 
-  return <PlayerCtx.Provider value={value}>{children}</PlayerCtx.Provider>;
+  return (
+    <PlayerCtx.Provider value={value}>
+      {children}
+      {isExternal && current?.permalink && (
+        <div style={{ display: "none" }}>
+          <ReactPlayer
+            ref={playerRef}
+            url={current.permalink}
+            playing={isPlaying}
+            volume={muted ? 0 : volume}
+            onProgress={(p: any) => setCurrentTime(p.playedSeconds)}
+            onDuration={(d: any) => setDuration(d)}
+            onEnded={() => {
+              if (repeatRef.current === 2) {
+                playerRef.current?.seekTo(0);
+              } else {
+                nextRef.current();
+              }
+            }}
+            config={{
+              soundcloud: {
+                options: { auto_play: false, visual: false },
+              } as any,
+            } as any}
+          />
+        </div>
+      )}
+    </PlayerCtx.Provider>
+  );
 }
 
 // ────────────────────────────── Likes ──────────────────────────────
